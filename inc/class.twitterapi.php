@@ -23,7 +23,7 @@
 			"geo"          => "geo",
 			"place"        => "place",
 			"contributors" => "contributors",
-			"user.id"      => "userid"
+			"user.id"      => "userid",
 		);
 		
 		public function query($path, $format = "json", $auth = NULL, $ssl = true){
@@ -99,7 +99,7 @@
 		}
 		
 		public function transformTweet($tweet){ // API tweet object -> DB tweet array
-			$t = array(); $e = array(); 
+			$t = array(); $e = array();
 			foreach(get_object_vars($tweet) as $k => $v){
 				if(array_key_exists($k, $this->dbMap)){
 					$key = $this->dbMap[$k];
@@ -137,11 +137,32 @@
 					}
 					$rt['extra'] = $rte;
 					$e['rt']     = $rt;
+				
+				// GET HASHTAGS
+				
+				} elseif($k == "entities"){
+					foreach(get_object_vars($v) as $kk => $vv){
+						if($kk == "hashtags"){
+							$ht = array();
+							echo "<ul>";
+							foreach($vv as $hv){
+								$ht[] = (string) $hv->text;
+								echo "<li><strong>#" . ($hv->text) . "</strong></li>";
+							}
+							echo "</ul>";
+							$hta = implode(',', $ht);
+						}
+						
+					}
+					
+				// END GET HASHTAGS
+				
 				} else {
 					$e[$k] = $v;
 				}
 			}
 			$t['extra'] = $e;
+			$t['hashtags'] = $hta;
 			$tt = hook("enhanceTweet", $t, true);
 			if(!empty($tt) && is_array($tt) && $tt['text']){
 				$t = $tt;
@@ -153,9 +174,14 @@
 			return str_replace("&amp;", "&", str_replace("&lt;", "<", str_replace("&gt;", ">", $str)));
 		}
 		
+		public function insertCategory($c){
+			global $db;
+			return "INSERT IGNORE INTO `".DTP."hashtags` (`hashtag`) VALUES ('" . $db->s($c) ."');"; 
+		}
+		
 		public function insertQuery($t){
 			global $db;
 			$type = ($t['text'][0] == "@") ? 1 : (preg_match("/RT @\w+/", $t['text']) ? 2 : 0);
-			return "INSERT INTO `".DTP."tweets` (`userid`, `tweetid`, `type`, `time`, `text`, `source`, `extra`, `coordinates`, `geo`, `place`, `contributors`) VALUES ('" . $db->s($t['userid']) . "', '" . $db->s($t['tweetid']) . "', '" . $db->s($type) . "', '" . $db->s($t['time']) . "', '" . $db->s($this->entityDecode($t['text'])) . "', '" . $db->s($t['source']) . "', '" . $db->s(serialize($t['extra'])) . "', '" . $db->s(serialize($t['coordinates'])) . "', '" . $db->s(serialize($t['geo'])) . "', '" . $db->s(serialize($t['place'])) . "', '" . $db->s(serialize($t['contributors'])) . "');";
+			return "INSERT INTO `".DTP."tweets` (`userid`, `tweetid`, `type`, `time`, `text`, `source`, `extra`, `coordinates`, `geo`, `place`, `contributors`, `hashtags`) VALUES ('" . $db->s($t['userid']) . "', '" . $db->s($t['tweetid']) . "', '" . $db->s($type) . "', '" . $db->s($t['time']) . "', '" . $db->s($this->entityDecode($t['text'])) . "', '" . $db->s($t['source']) . "', '" . $db->s(serialize($t['extra'])) . "', '" . $db->s(serialize($t['coordinates'])) . "', '" . $db->s(serialize($t['geo'])) . "', '" . $db->s(serialize($t['place'])) . "', '" . $db->s(serialize($t['contributors'])) . "', '" . $db->s($t['hashtags']) ."');";
 		}
 	}

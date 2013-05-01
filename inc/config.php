@@ -7,21 +7,21 @@
 
 	$config = array(
 		// REQUIRED VALUES ------------------------------------
-		'twitter_screenname' => '', // Your Twitter screen name
-		'timezone'           => '', // Choose one of these: http://php.net/manual/en/timezones.php
-		'path'               => '', // Where's your twitter installation on your domain? No end slash, please.
+		'twitter_screenname' => 'paulmist', // Your Twitter screen name
+		'timezone'           => 'Europe/London', // Choose one of these: http://php.net/manual/en/timezones.php
+		'path'               => '/rummagd', // Where's your twitter installation on your domain? No end slash, please.
 		// Database values
 		'db'                 => array(
-			'hostname'       => '', // The hostname of your database server. Usually 'localhost'
-			'username'       => '', // The username to log in to your database
-			'password'       => '', // The password to log in to your database
-			'database'       => '', // The database name
-			'table_prefix'   => ''  // The prefix to table names in the database
+			'hostname'       => 'localhost', // The hostname of your database server. Usually 'localhost'
+			'username'       => 'web83-rummagd', // The username to log in to your database
+			'password'       => 'st0mpb0x', // The password to log in to your database
+			'database'       => 'web83-rummagd', // The database name
+			'table_prefix'   => 'tn_'  // The prefix to table names in the database
 		),
 		
 		// OPTIONAL -------------------------------------------
 		// If you want to access your maintenance PHP files by HTTP, specify an admin password.
-		'maintenance_http_password' => '', 
+		'maintenance_http_password' => 'st0mpb0x', 
 		// UNLESS YOU HAVE SSL, IT WILL BE SENT IN CLEAR TEXT, SO MAYBE NOT YOUR TWITTER (or anything else) PASSWORD!
 		
 		// If you want Twitter @Anywhere hovercards on your archive, put your @Anywhere API key here
@@ -30,7 +30,7 @@
 		'follow_me_button'   => true, // Display 'follow me' button?
 		'smartypants'        => true, // Use SmartyPants to perfect punctuation inside tweets?
 		
-		'css' => 'styles/streamlined/styles.css.php', // What CSS file should we use?
+		'css' => 'styles/rummagd/styles.css',//'styles/streamlined/styles.css.php', // What CSS file should we use?
 		
 		'style' => array(
 			// Style

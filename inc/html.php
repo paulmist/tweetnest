@@ -16,7 +16,7 @@
 			$amount++;
 		}
 		$searching = $home ? false : (count($highlightedMonths) > 0);
-		$s = "<ul id=\"months\">\n";
+		$s = "<div class='months'><h2>Archive</h2><ul>\n";
 		if(!$home){
 			$s .= $y . "<li class=\"home\"><a href=\"" . $path . "/\"><span class=\"m" . ($searching ? " ms\"><span class=\"a\">" : "\">") . "Recent tweets" . ($searching ? "</span><span class=\"b\"> (exit " . s($filterMode) . ")</span>" : "") . "</span></a></li>\n";
 		}
@@ -56,10 +56,10 @@
 			$s .= $y . "<li" . ($c ? " class=\"" . $c . "\"" : "") . ">" .
 			"<a href=\"" . ($cc > 0 ? s($pURL) : $path . "/" . s($m['y']) . "/" . s(pad($m['m']))) . "\">" .
 			"<span class=\"m\">" . date("F Y", mktime(1,0,0,$m['m'],1,$m['y'])) . "</span>" .
-			"<span class=\"n\"> " . number_format($m['c']) . ($cc > 0 ? " <strong>(" . number_format($cc) . ")</strong>" : "") . 
-			"</span><span class=\"p\" style=\"width:" . round((($m['c']/$max)*100), 2) . "%\"></span></a></li>\n";
+			"<span class=\"n\">" . number_format($m['c']) . ($cc > 0 ? " <strong>(" . number_format($cc) . ")</strong>" : "") . 
+			/*"</span><span class=\"p\" style=\"width:" . round((($m['c']/$max)*100), 2) . "%\"></span>*/ "</a></li>\n";
 		}
-		$s .= $y . "<li class=\"meta\">" . number_format($total) . " total tweets" . ($amount > 0 ? " <!-- approx. " . round(number_format($total / $amount), 2) . " monthly -->" : "") . "</li>\n" . $x . "</ul>\n";
+		$s .= $y . "<li class=\"meta\">" . number_format($total) . " total tweets" . ($amount > 0 ? " <!-- approx. " . round(number_format($total / $amount), 2) . " monthly -->" : "") . "</li>\n" . $x . "</ul></div>\n";
 		return $s;
 	}
 	
@@ -110,6 +110,21 @@
 		$s .= $x . "</div></div>\n";
 		return $s;
 	}
+	
+	// Display Category list
+	
+	function displayCategories(){
+		global $db, $config;
+		$s = "<div class='categories'><h2>Categories</h2><ul>";
+		$q = $db->query("SELECT `".DTP."hashtags`.* FROM `".DTP."hashtags`");
+		while($r = $db->fetch($q)){
+			$s .= "<li><a href='category.php?c=" . $r['hashtag'] . "'>" . $r['hashtag'] . "</a></li>";
+		}
+		$s .= "</ul></div>";
+		return $s;
+	}
+	
+	// END
 	
 	function tweetHTML($tweet, $tabs = 4){
 		global $twitterApi;

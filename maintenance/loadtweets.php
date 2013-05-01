@@ -80,9 +80,13 @@
 			echo l("Newest tweet I've got: <strong>" . $sinceID . "</strong>\n");
 		}
 		
+		
+		
+		
 		// Retrieve tweets
 		for($i = 0; $i < $pages; $i++){
-			$path = "1/statuses/user_timeline.json?" . $p . "&include_rts=true&count=" . $maxCount . ($sinceID ? "&since_id=" . $sinceID : "") . ($maxID ? "&max_id=" . $maxID : "");
+			$path = "1/statuses/user_timeline.json?" . $p . "&include_entities=1&include_rts=true&count=" . $maxCount . ($sinceID ? "&since_id=" . $sinceID : "") . ($maxID ? "&max_id=" . $maxID : "");
+			// added &include_entities=1 to include hashtags
 			echo l("Retrieving page <strong>#" . ($i+1) . "</strong>: <span class=\"address\">" . ls($path) . "</span>\n");
 			$data = $twitterApi->query($path);
 			if(is_array($data) && $data[0] === false){ dieout(l(bad("Error: " . $data[1] . "/" . $data[2]))); }
@@ -110,6 +114,23 @@
 			$error = false;
 			foreach($tweets as $tweet){
 				$q = $db->query($twitterApi->insertQuery($tweet));
+				
+				// GET, and ADD HASHTAGS to DB
+				
+				// Check to see if tweet includes hashtags
+				if(!empty($tweet['hashtags'])){
+					// Loop through hastags, and echo message
+					foreach(explode(",", $tweet['hashtags']) as $category){
+						echo "<div style='background: #143320; color: #25CF63; padding: 10px; margin: 10px 0; border-radius: 5px;'>";
+						echo "<strong style='color: #fff;'>HASHTAGS/CATGEORY FOUND: </strong>" . $category . "</br>";
+						echo "</div>";
+						// Insert hashtag to DB as Category
+						$hq = $db->query($twitterApi->insertCategory($category));
+					}
+				}
+	
+				// END GET HASHTAGS
+				
 				if(!$q){
 					dieout(l(bad("DATABASE ERROR: " . $db->error())));
 				}
